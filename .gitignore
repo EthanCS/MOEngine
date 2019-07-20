@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+
+# Build
+[Dd]ebug/
+[Rr]elease/
+x64/
+build/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
