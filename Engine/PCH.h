@@ -10,3 +10,7 @@
 #include <D3DCompiler.h>
 #include <DirectXMath.h>
 #include "d3dx12.h"
+
+#include <string>
+
+#include <comdef.h>

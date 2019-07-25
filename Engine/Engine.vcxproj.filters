@@ -4,6 +4,9 @@
     <Filter Include="Source">
       <UniqueIdentifier>{741bab2c-b048-4f29-a1de-6bc3a5630dae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{5fcedbb7-083b-486d-b5c8-5d69e917a27d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -12,6 +15,15 @@
     <ClCompile Include="PCH.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Common\Application.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ExceptionHandler.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\Util.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCH.h">
@@ -19,6 +31,15 @@
     </ClInclude>
     <ClInclude Include="d3dx12.h">
       <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Application.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ExceptionHandler.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Util.h">
+      <Filter>Source\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
