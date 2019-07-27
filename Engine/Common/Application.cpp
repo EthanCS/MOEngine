@@ -1,6 +1,6 @@
 #include "EnginePCH.h"
-#include "Application.h"
-#include "ExceptionHandler.h"
+#include "Common/Application.h"
+#include "Common/ExceptionHandler.h"
 
 using namespace Microsoft::WRL;
 using namespace moEngine;
@@ -56,6 +56,8 @@ int Application::Execute()
 {
 	MSG msg = { 0 };
 
+	m_TimeMgr.Reset();
+
 	while (msg.message != WM_QUIT)
 	{
 		// If there are Window messages then process them.
@@ -67,7 +69,19 @@ int Application::Execute()
 		// Otherwise, do animation/game stuff.
 		else
 		{
+			m_TimeMgr.Tick();
 
+			if (!m_AppPaused)
+			{
+				DisplayFPSOnTitle();
+				float deltaTime = m_TimeMgr.DeltaTime();
+				Update(deltaTime);
+				Draw(deltaTime);
+			}
+			else
+			{
+				Sleep(100);
+			}
 		}
 	}
 
@@ -267,6 +281,97 @@ LRESULT Application::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
 	{
+	case WM_ACTIVATE:
+		if (LOWORD(wParam) == WA_INACTIVE)
+		{
+			m_AppPaused = true;
+			m_TimeMgr.Stop();
+		}
+		else
+		{
+			m_AppPaused = false;
+			m_TimeMgr.Start();
+		}
+		return 0;
+
+	// WM_SIZE is sent when the user resizes the window.  
+	case WM_SIZE:
+		// Save the new client area dimensions.
+		m_Width = LOWORD(lParam);
+		m_Height = HIWORD(lParam);
+		if (m_D3DDevice)
+		{
+			if (wParam == SIZE_MINIMIZED)
+			{
+				m_AppPaused = true;
+				m_AppMinimized = true;
+				m_AppMaximized = false;
+			}
+			else if (wParam == SIZE_MAXIMIZED)
+			{
+				m_AppPaused = false;
+				m_AppMinimized = false;
+				m_AppMaximized = true;
+				OnResize();
+			}
+			else if (wParam == SIZE_RESTORED)
+			{
+				// Restoring from minimized state?
+				if (m_AppMinimized)
+				{
+					m_AppPaused = false;
+					m_AppMinimized = false;
+					OnResize();
+				}
+
+				// Restoring from maximized state?
+				else if (m_AppMaximized)
+				{
+					m_AppPaused = false;
+					m_AppMaximized = false;
+					OnResize();
+				}
+				else if (m_AppResizing)
+				{
+					// If user is dragging the resize bars, we do not resize 
+					// the buffers here because as the user continuously 
+					// drags the resize bars, a stream of WM_SIZE messages are
+					// sent to the window, and it would be pointless (and slow)
+					// to resize for each WM_SIZE message received from dragging
+					// the resize bars.  So instead, we reset after the user is 
+					// done resizing the window and releases the resize bars, which 
+					// sends a WM_EXITSIZEMOVE message.
+				}
+				else // API call such as SetWindowPos or mSwapChain->SetFullscreenState.
+				{
+					OnResize();
+				}
+			}
+		}
+		return 0;
+
+	// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.
+	case WM_ENTERSIZEMOVE:
+		m_AppPaused = true;
+		m_AppResizing = true;
+		m_TimeMgr.Stop();
+		return 0;
+
+	// WM_EXITSIZEMOVE is sent when the user releases the resize bars.
+	// Here we reset everything based on the new window dimensions.
+	case WM_EXITSIZEMOVE:
+		m_AppPaused = false;
+		m_AppResizing = false;
+		m_TimeMgr.Start();
+		OnResize();
+		return 0;
+
+	// Catch this message so to prevent the window from becoming too small.
+	case WM_GETMINMAXINFO:
+		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
+		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 200;
+		return 0;
+
 	case WM_KEYDOWN:
 		if (wParam == VK_ESCAPE)
 		{
@@ -399,5 +504,34 @@ void Application::FlushCommandQueue()
 		// Wait until the GPU hits current fence event is fired.
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
+	}
+}
+
+void Application::DisplayFPSOnTitle()
+{
+	static int frameCount = 0;
+	static float timeElapsed = 0.0f;
+
+	++frameCount;
+
+	// Compute averages over one second period.
+	float totalTime = m_TimeMgr.TotalTime();
+	if ((totalTime - timeElapsed) >= 1.0f)
+	{
+		float fps = (float)frameCount;
+		float mspf = 1000.0f / fps;
+
+		std::wstring fpsStr = std::to_wstring(fps);
+		std::wstring mspfStr = std::to_wstring(mspf);
+
+		std::wstring windowText = m_WindowTitle +
+			L"    fps: " + fpsStr +
+			L"   mspf: " + mspfStr;
+
+		SetWindowText(m_HWnd, windowText.c_str());
+
+		// Reset for next average.
+		frameCount = 0;
+		timeElapsed += 1.0f;
 	}
 }

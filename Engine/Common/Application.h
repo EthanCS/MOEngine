@@ -3,6 +3,8 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
+#include "Common/TimeManager.h"
+
 namespace moEngine
 {
 	class Application
@@ -21,6 +23,8 @@ namespace moEngine
 
 		virtual bool Initialize();
 		virtual void OnResize();
+		virtual void Update(float deltaTime) = 0;
+		virtual void Draw(float deltaTime) = 0;
 
 		bool InitWindow();
 		bool InitD3D12();
@@ -32,6 +36,10 @@ namespace moEngine
 
 		HINSTANCE GetInstance() const { return m_HInstanceApp; }
 		HWND GetWnd() const { return m_HWnd; }
+		ID3D12Resource* GetCurrentBackBuffer() const
+		{
+			return m_SwapChainBuffer[m_CurBackBufferIdx].Get();
+		}
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentBackBufferView() const
 		{
 			return CD3DX12_CPU_DESCRIPTOR_HANDLE(
@@ -44,12 +52,21 @@ namespace moEngine
 			return m_DsvHeap->GetCPUDescriptorHandleForHeapStart();
 		}
 
+	private:
+		void DisplayFPSOnTitle();
+
 	protected:
 		// Application related
 		static Application* m_Application;
 		std::wstring m_WindowTitle = L"moEngine";
 		int m_Width = 1280;
 		int m_Height = 720;
+		TimeManager m_TimeMgr;
+		bool m_AppPaused = false;
+		bool m_AppMinimized = false;
+		bool m_AppMaximized = false;
+		bool m_AppResizing = false;   // are the resize bars being dragged?
+
 
 		// D3D12 related
 		DXGI_FORMAT m_BackBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;

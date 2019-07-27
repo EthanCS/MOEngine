@@ -14,4 +14,6 @@ public:
 
 protected:
 	virtual void OnResize() override;
+	virtual void Update(float deltaTime) override;
+	virtual void Draw(float deltaTime) override;
 };

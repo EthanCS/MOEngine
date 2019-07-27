@@ -27,6 +27,9 @@
     <ClCompile Include="EnginePCH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Common\TimeManager.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="d3dx12.h">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="EnginePCH.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\TimeManager.h">
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

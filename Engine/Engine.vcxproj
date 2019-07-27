@@ -23,6 +23,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnginePCH.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="Common\ExceptionHandler.cpp" />
+    <ClCompile Include="Common\TimeManager.cpp" />
     <ClCompile Include="Common\Util.cpp" />
     <ClCompile Include="EnginePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -38,6 +39,7 @@
   <ItemGroup>
     <ClInclude Include="Common\Application.h" />
     <ClInclude Include="Common\ExceptionHandler.h" />
+    <ClInclude Include="Common\TimeManager.h" />
     <ClInclude Include="Common\Util.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="EnginePCH.h" />

@@ -1,5 +1,5 @@
 #include "EnginePCH.h"
-#include "ExceptionHandler.h"
+#include "Common/ExceptionHandler.h"
 
 ExceptionHandler::ExceptionHandler(HRESULT hr, const std::wstring& functionName, const std::wstring& filename, int lineNumber) :
 	ErrorCode(hr),
